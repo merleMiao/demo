@@ -1,0 +1,173 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+
+    <script language="javascript" type="text/javascript" src="My97DatePicker/WdatePicker.js"></script>
+    <script type="text/javascript" src="js/jquery-1.8.3.min.js"></script>
+    <script type="text/javascript" src="js/jquery.cookie.js"></script>
+    <!--<script type="text/javascript" src="js/functions.js"></script>-->
+
+    <!--<script type="text/javascript" src="js/public.js"></script>-->
+    <title>管理后台登陆</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            font-size: 14px;
+            color: #333;
+            font-family: "微软雅黑";
+        }
+
+        li {
+            list-style: none;
+        }
+
+        .login {
+            background: #d6dee0;
+        }
+
+        .w468 {
+            width: 468px;
+        }
+
+        .bodies {
+            border: 2px solid #fff;
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            margin-left: -234px;
+            background: #eee;
+            border-radius: 5px;
+            -webkit-border-radius: 5px;
+            -moz-border-radius: 5px;
+        }
+
+        .bodies h2 {
+            font-size: 24px;
+            color: #616161;
+            height: 40px;
+            line-height: 40px;
+            margin: 40px 50px;
+            border-bottom: 1px solid #ccc;
+        }
+
+        .bodies li {
+            margin: 40px 0 20px 0;
+        }
+
+        .bodies label {
+            float: left;
+            width: 100px;
+            font-size: 16px;
+            text-align: right;
+        }
+
+        .bodies li input {
+            width: 260px;
+            height: 30px;
+            line-height: 30px;
+            text-indent: 6px;
+        }
+
+        .btn {
+            text-align: center;
+            padding: 10px 0 40px 0;
+        }
+
+        .btn a {
+            display: inline-block;
+            width: 204px;
+            height: 30px;
+            line-height: 30px;
+            background: #3996dc;
+            color: #fff;
+            text-decoration: none;
+        }
+    </style>
+</head>
+
+<body class="login">
+<div align="right" id="time"></div>
+<!--<div align="right"> <input class="Wdate" type="text" onClick="WdatePicker()"></div>-->
+<div class="w468 bodies">
+    <h2>用户登录界面 </h2>
+    <div class="">
+        <ul>
+            <li><label>用户名：</label><input type="text" id="identify" value="1000"/></li>
+            <li><label>密码：</label><input type="password" id="password" value="123456"/></li>
+        </ul>
+        <div class="btn"><a href="#" title="" target="" onclick="sub()">请登录</a></div>
+    </div>
+</div>
+
+<script>
+    $(function () {
+        var H = $(".bodies").height();
+        $(".bodies").css({"margin-top": -H / 2});
+        $(document).keydown(function (e) {
+            var e = e || window.event;
+            if (e.keyCode == 13) {
+                sub();
+            }
+        });
+    });
+
+    var showTime = function(){
+        var date = new Date();
+        var now = "";
+        now = date.getFullYear() + "年" + (date.getMonth() + 1 + '月');
+        now = now + (date.getMonth() + 1) + "月";
+        now = now + date.getDate() + "日";
+        now = now + date.getHours() + "时";
+        now = now + date.getMinutes() + "分";
+        now = now + date.getSeconds() + "秒";
+        $('#time').html(now);
+//        setTimeout('showTime()',1000);
+    };
+
+    $(function(){
+        setInterval('showTime()',1000);
+    });
+
+
+    var sub = function ()
+    {
+//        var identify = $('#identify').val();//用户名
+//        var password = $('#password').val();//密码
+
+        var identify = $('#identify').val();//用户名
+        var password = $('#password').val();//密码
+        if (identify == null || password == null)
+        {
+            return;
+        }
+        $.ajax({
+            type: "post",
+            async:false,
+            url:'/demo/api/user/login.json',
+            data: {"identify":identify ,"password":encodeURIComponent(password)},
+            dataType: 'json',
+            success: function (resp)
+            {
+                if (resp.result == 0)
+                {
+                    setCookie('name',resp.user.name);
+                    setCookie('id',resp.user.id);
+                    window.location.href = 'index.html';
+                } else
+                {
+                    alert(resp.msg);
+                }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown)
+            {
+                alert("服务器内部错误，状态码：" + XMLHttpRequest.status);
+            }
+        });
+    }
+
+</script>
+</body>
+</html>

@@ -1,0 +1,66 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+
+
+    <script language="javascript" type="text/javascript" src="My97DatePicker/WdatePicker.js"></script>
+    <script language="javascript" type="text/javascript" src="js/jquery.js"></script>
+    <script language="javascript" type="text/javascript" src="js/jquery.layout.min.js"></script>
+    <SCRIPT type="text/javascript">
+        $(document).ready(function () {
+            $('body').layout({ applyDefaultStyles: true });
+        });
+    </SCRIPT>
+    <title>系统主页</title>
+    <style>
+        a{
+            display: block;
+            font-size: 15px;
+            line-height: 18px;
+            text-decoration: none;
+            color: #333;
+            font-family: Arial;
+            font-size: 12px;
+        }
+        .shell
+        {
+            background:no-repeat 4px 5px;
+            border: 1px solid #aaa;
+            width: 400px;
+            padding: 3px 2px 2px 20px;
+        }
+        #div1
+        {
+            height: 36px;
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body class="easyui-layout">
+<div class="ui-layout-center">Center
+    <button id="brokenLine" onclick="toHighChart()">
+        折线图
+    </button>
+    <button id="highcharts" onclick="toHighChart()">
+        折线图
+    </button>
+</div>
+<div class="ui-layout-north"><h1 align="center">首页</h1></div>
+<div class="ui-layout-south">South</div>
+<div class="ui-layout-east">
+    <div id="time"></div>
+</div>
+
+
+<div class="ui-layout-west">West</div>
+<script type="text/javascript">
+    WdatePicker({eCont:'time'});
+
+    function toHighChart(){
+        window.open('highchart.html');
+    }
+</script>
+</body>
+</html>

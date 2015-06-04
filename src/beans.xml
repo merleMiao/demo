@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="utf-8"?>
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:task="http://www.springframework.org/schema/task"
+       xmlns="http://www.springframework.org/schema/beans"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+       http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/context/spring-context.xsd
+       http://www.springframework.org/schema/task
+       http://www.springframework.org/schema/task/spring-task-4.0.xsd
+       http://www.springframework.org/schema/mvc
+       http://www.springframework.org/schema/mvc/spring-mvc.xsd
+       http://www.springframework.org/schema/aop
+       http://www.springframework.org/schema/aop/spring-aop.xsd">
+
+    <!-- 在xml配置了这个标签后，spring可以自动去扫描base-pack下面或者子包下面的java文件，
+    如果扫描到有@Component @Controller @Service等这些注解的类，则把这些类注册为bean -->
+    <context:component-scan base-package="cn.miao"/>
+
+    <!--注意配置需要放到<mvc:annotation-driven />之前，否则无效 -->
+    <!-- 导入mybatis的配置 -->
+    <import resource="mybatis.xml"></import>
+
+    <!-- 作用是向 Spring 容器注册
+    AutowiredAnnotationBeanPostProcessor、CommonAnnotationBeanPostProcessor、
+    PersistenceAnnotationBeanPostProcessor 以及 RequiredAnnotationBeanPostProcessor 这 4 个BeanPostProcessor。
+    注册这4个 BeanPostProcessor的作用，就是为了你的系统能够识别相应的注解。-->
+    <context:annotation-config/>
+
+    <!-- 定义切面-->
+    <bean id="myAspect" class="cn.miao.code.aop.ServiceAspect"/>
+
+    <aop:config>
+        <aop:aspect id="aspect" ref="myAspect">
+            <aop:pointcut id="businessService" expression="execution(* cn.miao.code..*impl.*(..))"/>
+            <aop:before pointcut-ref="businessService" method="doBefore"/>
+            <aop:after pointcut-ref="businessService" method="doAfter"/>
+            <aop:around pointcut-ref="businessService" method="doAround"/>
+            <aop:after-throwing pointcut-ref="businessService" method="doThrowing" throwing="ex"/>
+        </aop:aspect>
+    </aop:config>
+
+    <!-- 以json格式返回ModelAndView -->
+    <bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter">
+        <property name="messageConverters">
+            <list>
+                <ref bean="mappingJacksonHttpMessageConverter"/>
+                <bean class="org.springframework.http.converter.FormHttpMessageConverter"/>
+                <bean class="org.springframework.http.converter.BufferedImageHttpMessageConverter"/>
+                <bean class="org.springframework.http.converter.ByteArrayHttpMessageConverter"/>
+                <bean class="org.springframework.http.converter.StringHttpMessageConverter"/>
+                <bean class="org.springframework.http.converter.ResourceHttpMessageConverter"/>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="mappingJacksonHttpMessageConverter"
+          class="org.springframework.http.converter.json.MappingJacksonHttpMessageConverter">
+        <property name="supportedMediaTypes">
+            <value>application/json</value>
+        </property>
+        <property name="objectMapper">
+            <bean class="com.miao.util.http.MObjectMapper"/>
+        </property>
+    </bean>
+
+    <bean id="syncHandler" class="cn.miao.code.sync.DbFactory">
+        <property name="ds" ref="dataSource"></property>
+    </bean>
+
+    <bean id="conversionService" class="org.springframework.context.support.ConversionServiceFactoryBean">
+        <property name="converters">
+            <set>
+                <bean class="com.miao.util.converter.DateConverter"></bean>
+            </set>
+        </property>
+    </bean>
+
+    <mvc:interceptors>
+        <bean class="cn.miao.code.uc.intercepter.LoginInterceptor"/>
+        <!--<bean class="com.fishbone.core.jackson.JsonFilterAdvice"/>-->
+    </mvc:interceptors>
+
+    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <property name="maxUploadSize" value="104857600"/>
+        <property name="maxInMemorySize" value="4096"/>
+        <property name="defaultEncoding" value="utf-8"/>
+    </bean>
+
+    <bean id="handlerMapping"
+          class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping">
+        <property name="interceptors">
+            <list>
+                <bean class="cn.miao.plat.intercepetor.ParameterInterceptor"/>
+            </list>
+        </property>
+    </bean>
+
+    <mvc:annotation-driven conversion-service="conversionService"/>
+
+    <bean class="org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor"/>
+    <!--view -->
+    <bean class="org.springframework.web.servlet.view.ContentNegotiatingViewResolver">
+        <property name="order" value="0"/>
+        <property name="useNotAcceptableStatusCode" value="true"/>
+        <property name="contentNegotiationManager">
+            <bean class="org.springframework.web.accept.ContentNegotiationManager">
+                <constructor-arg>
+                    <bean class="org.springframework.web.accept.PathExtensionContentNegotiationStrategy">
+                        <constructor-arg>
+                            <map>
+                                <entry key="html" value="text/html"/>
+                                <entry key="jsp" value="text/html"/>
+                                <entry key="json" value="application/json"/>
+                                <entry key="jsonp" value="application/javascript"/>
+                                <entry key="xml" value="application/xml"/>
+                            </map>
+                        </constructor-arg>
+                    </bean>
+                </constructor-arg>
+            </bean>
+        </property>
+        <property name="defaultViews">
+            <list>
+                <bean class="cn.miao.plat.core.json.MappingJsonView"></bean>
+            </list>
+        </property>
+        <property name="viewResolvers">
+            <list>
+                <bean class="org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver">
+                    <property name="cache" value="false"/>
+                    <property name="order" value="0"/>
+                    <property name="prefix" value="/"/>
+                    <property name="suffix" value=".ftl"/>
+                    <property name="contentType" value="text/html"/>
+                    <property name="exposeSpringMacroHelpers" value="true"/>
+                    <property name="requestContextAttribute" value="rc"/>
+                    <property name="exposeSessionAttributes" value="true"/>
+                    <property name="viewClass" value="org.springframework.web.servlet.view.freemarker.FreeMarkerView"/>
+                </bean>
+                <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+                    <property name="contentType" value="text/html"/>
+                    <property name="order" value="100"/>
+                    <property name="prefix" value="/WEB-INF/jsp/"/>
+                    <property name="suffix" value=".jsp"/>
+                </bean>
+                <bean id="viewResolver" class="cn.miao.plat.core.spring.BaseNameViewResolver">
+                    <property name="baseNamePicker">
+                        <bean class="cn.miao.plat.core.spring.BaseNamePickerImpl">
+                            <property name="configLocations" value="classpath*:**/config/*_views*"/>
+                        </bean>
+                    </property>
+                </bean>
+            </list>
+        </property>
+    </bean>
+
+    <!-- ftl参数配置 -->
+    <bean id="fmXmlEscape" class="freemarker.template.utility.XmlEscape"/>
+    <bean id="freemarkerConfig" class="org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer">
+        <property name="templateLoaderPath">
+            <value>/WEB-INF/freemarker/</value>
+        </property>
+        <property name="defaultEncoding" value="utf-8"/>
+        <property name="freemarkerVariables">
+            <map>
+                <entry key="xml_escape" value-ref="fmXmlEscape"/>
+            </map>
+        </property>
+        <property name="freemarkerSettings">
+            <props>
+                <prop key="template_update_delay">3</prop>
+            </props>
+        </property>
+    </bean>
+
+    <bean id="schedulerFactoryBean" class="org.springframework.scheduling.quartz.SchedulerFactoryBean"/>
+
+    <bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">
+        <!-- 国际化信息所在的文件名 -->
+        <property name="basename" value="message"/>
+        <!-- 如果在国际化资源文件中找不到对应代码的信息，就用这个代码作为名称  -->
+        <property name="useCodeAsDefaultMessage" value="true"/>
+    </bean>
+
+    <bean id="exceptionResolver" class="com.miao.util.exception.MyExceptionResolver">
+    </bean>
+
+    <mvc:annotation-driven/>
+
+</beans>
