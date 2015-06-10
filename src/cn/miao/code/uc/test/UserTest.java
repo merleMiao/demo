@@ -56,5 +56,13 @@ public class UserTest {
         System.out.println(result);
     }
 
+    @Test
+    public void uuid(){
+        for(int i = 0; i < 20; i ++){
+            System.out.println("第" + i + "个:"+ UUIDUtils.base58Uuid());
+
+        }
+    }
+
 
 }

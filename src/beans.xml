@@ -24,6 +24,9 @@
     <!-- 导入mybatis的配置 -->
     <import resource="mybatis.xml"></import>
 
+    <!-- 引入mongo配置 -->
+    <import resource="mongo.xml"/>
+
     <!-- 作用是向 Spring 容器注册
     AutowiredAnnotationBeanPostProcessor、CommonAnnotationBeanPostProcessor、
     PersistenceAnnotationBeanPostProcessor 以及 RequiredAnnotationBeanPostProcessor 这 4 个BeanPostProcessor。
@@ -81,7 +84,6 @@
 
     <mvc:interceptors>
         <bean class="cn.miao.code.uc.intercepter.LoginInterceptor"/>
-        <!--<bean class="com.fishbone.core.jackson.JsonFilterAdvice"/>-->
     </mvc:interceptors>
 
     <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">

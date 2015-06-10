@@ -13,7 +13,7 @@
        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
 
-    <context:property-placeholder location="classpath:mysql.properties"></context:property-placeholder>
+    <context:property-placeholder location="classpath:mysql.properties" ignore-unresolvable="true"></context:property-placeholder>
 
     <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
         <property name="configLocation" value="classpath:mybatis-config.xml"/>
@@ -50,7 +50,7 @@
         <property name="filters" value="config"/>
         <!--<property name="connectionProperties" value="config.decrypt=true" />-->
         <!--<property name="filters" value="mergeStat"/>-->
-        <property name="timeBetweenLogStatsMillis" value="300000" />
+        <property name="timeBetweenLogStatsMillis" value="300000"/>
     </bean>
 
     <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
