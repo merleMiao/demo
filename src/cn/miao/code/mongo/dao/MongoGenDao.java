@@ -12,6 +12,9 @@ public abstract class MongoGenDao<T> {
     @Autowired
     protected MongoTemplate mongoTemplate;
 
+
+
+
     /**
      * 保存一个对象
      * @param t
