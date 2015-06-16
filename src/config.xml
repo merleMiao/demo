@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<global>
+
+    <redis>
+        <host>127.0.0.1</host>
+    </redis>
+
+    <mail>
+        <host>smtp.163.com</host>
+        <acc>merle_miao@163.com</acc>
+        <accName>merle_miao</accName>
+        <password>a37868153</password>
+    </mail>
+
+    <mongo>
+        <host>127.0.0.1</host>
+        <port>27017</port>
+        <poolSize>10</poolSize>
+        <blockSize>10</blockSize>
+    </mongo>
+
+    <amq>
+        <host>failover:(tcp://127.0.0.1:61616)?initialReconnectDelay=1000</host>
+    </amq>
+
+    <!-- memcache -->
+    <memcache>
+        <defaultClient>
+            com.miao.util.cache.memcache.XMemcacheManager
+        </defaultClient>
+        <xmemcacheMergeFactor>150</xmemcacheMergeFactor>
+        <!-- 存储有效时间 （小时）-->
+        <cachetimeout>48</cachetimeout>
+        <!-- 获取缓存对象时的超时时间（ms） -->
+        <opTimeout>300</opTimeout>
+        <connectionPoolSize>10</connectionPoolSize>
+        <readThreadCount>12</readThreadCount>
+        <connectTimeout>300</connectTimeout>
+        <servers>
+            <port weight="10">127.0.0.1:11211</port>
+        </servers>
+    </memcache>
+
+</global>
