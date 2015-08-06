@@ -1,0 +1,54 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+
+
+    <script language="javascript" type="text/javascript" src="../My97DatePicker/WdatePicker.js"></script>
+    <script language="javascript" type="text/javascript" src="../js/jquery.js"></script>
+    <script language="javascript" type="text/javascript" src="../js/jquery.layout.min.js"></script>
+    <script language="javascript" type="text/javascript" src="../js/jquery.ztree.core-3.5.min.js"></script>
+
+    <SCRIPT type="text/javascript">
+        var setting = {
+            async: {
+                enable: true,
+                type:'get',
+                autoParam: ["id"],
+                url:"/demo/api/ztree/list.json?"
+            },
+            data: {
+                simpleData: {   //简单的数据源，一般开发中都是从数据库里读取，API有介绍，这里只是本地的
+                    enable: true,
+                    idKey: "id",  //id和pid，这里不用多说了吧，树的目录级别
+                    pIdKey: "pId",
+                    rootPId: 0   //根节点
+                }
+            },
+            callback: {
+                onAsyncSuccess: function(data){
+
+                },  /**回调函数的设置，异步提交成功的回调函数**/
+                beforeClick : function(treeId,treeNode){
+                    if(!treeNode.isParent){
+                        alert("请选择父节点");
+                        return false;
+                    }else{
+                        return true;
+                    }
+                }
+            }
+        };
+
+        $(document).ready(function(){//初始化ztree对象
+            $.fn.zTree.init($("#cityTree"), setting);
+        });
+    </SCRIPT>
+    <title>ztree主页</title>
+
+</head>
+<body>
+<ul id="cityTree" class="ztree"></ul>
+</body>
+</html>
