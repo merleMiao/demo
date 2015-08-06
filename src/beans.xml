@@ -60,6 +60,7 @@
         </property>
     </bean>
 
+    <!-- 以json格式返回ModelAndView -->
     <bean id="mappingJacksonHttpMessageConverter"
           class="org.springframework.http.converter.json.MappingJacksonHttpMessageConverter">
         <property name="supportedMediaTypes">
@@ -179,7 +180,7 @@
         </property>
     </bean>
 
-    <bean id="schedulerFactoryBean" class="org.springframework.scheduling.quartz.SchedulerFactoryBean"/>
+    <!--<bean id="schedulerFactoryBean" class="org.springframework.scheduling.quartz.SchedulerFactoryBean"/>-->
 
     <bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">
         <!-- 国际化信息所在的文件名 -->
